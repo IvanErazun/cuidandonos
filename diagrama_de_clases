@@ -1,0 +1,92 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+'---herencia---'
+
+class Persona{
+    - String nombre
+    - String apellido
+    - String dirección
+    - String edad
+    - String sexo
+    'pasivo / activo (fuiste un transeunte)' 'EVALUAR BOOLEANOS SOBRE ENUM'
+    - Boolean estado
+    'disponibilidad para recibir notificaciones'
+    - Boolean notificaciones
+    + void prenderNotificaciones()
+    + void apagarNotificaciones()
+
+}
+
+class Cuidador{
+    - Persona cuidador
+    respuestaCuidado(Boolean)
+}
+
+class Transeunte{
+    - Persona transeunte
+    - List<Cuidador> cuidadores
+
+    'POSIBILIDAD DE USAR TEMPLATE METHOD'
+    '-----------------------------------'
+    'APAGAMOS NOTIFICACIONES Y NOTIFICAMOS A LOS CUIDADORES Y inicia el contador en viaje'
+    + void comenzar()
+    'Prende las notificaciones y notifica a los cuidadore que se llego bien'
+    + void llegueBien()
+
+    'Le notifica a los cuidadores que arranco el viaje'
+    + notificarArranqueViaje()
+    + void confirmarCuidadores()
+}
+
+'--para un destino único--'
+class Viaje{
+    - Ubicacion ubicacionInicial
+    - Ubicacion ubicacionFinal
+    'en minutos'
+    - double demoraAprox
+    'en metros'
+    - double distancia
+    - double cronometro = 0
+    - TipoAlerta tipoDeAlerta
+    - calcularDistanciaYDemora(CalculadorDistancia, CalculadorDemora)
+    - alertarPeligro
+}
+
+interface TipoAlerta {
+    void alertar()
+}
+
+class MensajeAlerta {
+    'Enviar un mensaje de alerta a sus cuidadores
+    alertar()
+}
+class LlamadaPolicia {
+    'Realizar una llamada automática a la policía
+    alertar()
+}
+class LlamadaUsario {
+    'Realizar una llamada al celular del usuario
+    alertar()
+}
+class MensajeAlerta {
+    Integer minutosEspera
+    'Esperar N minutos para ver si es una falsa alarma (los minutos deben ser parametrizables)
+    alertar()
+}
+
+class Ubicacion{
+    - String descripcion
+    - Float latitud
+    - Float longitud
+}
+
+'REVISAR SI NO ES UN PATRON DE DISEÑO'
+interface CalculadorDistancia{
+    + distanciaEntre(Ubicacion, Ubicacion);
+}
+interface CalculadorDemora{
+    + demoraAproxTrayecto(double);
+}
+
+@enduml
