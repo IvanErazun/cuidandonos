@@ -1,7 +1,8 @@
 @startuml
-skinparam classAttributeIconSize 0
+'skinparam classAttributeIconSize 0
 
 '---herencia---'
+
 
 class Persona{
     - String nombre
@@ -9,31 +10,51 @@ class Persona{
     - String dirección
     - String edad
     - String sexo
-    'pasivo / activo (fuiste un transeunte)' 'EVALUAR BOOLEANOS SOBRE ENUM'
+    'pasivo / activo (fuiste un transeunte)' 'EVALUAR BOOLEANOS SOBRE ENUM | CLASE CONCRETA'
     - Boolean estado
     'disponibilidad para recibir notificaciones'
     - Boolean notificaciones
+
     + void prenderNotificaciones()
     + void apagarNotificaciones()
 
 }
 
+Persona <|-- Cuidador
+Persona <|-- Transeunte
+
 class Cuidador{
     - Persona cuidador
-    respuestaCuidado(Boolean)
+
+    +Boolean aceptoViaje(Viaje)
 }
 
 class Transeunte{
     - Persona transeunte
-    - List<Cuidador> cuidadores
+    - Set<Cuidador> cuidadoresPendientes
+    - Set<Cuidador> cuidadoresConfirmados
+    - Viaje viaje
+    'LOS QUE ACEPTAN EL CUIDADO SE AGREGAN A LA LISTA DE CUIDADORES'
+    + elegirCuidadores()
+    /'
 
+     ----DESCRIPCION DE ELEGIR CUIDADORES----
+    1paso
+    - lista cuidadoresPendientes: julian, juan, juana, maria
+    2paso:
+    - aceptas o no? envio de notificacion de confirmación
+    - boton de comenzar bloqueado
+    - espera a que confirme al menos 1 cuidador
+    3paso:
+    - meter a lista de cuidadoresConfirmados aquellos que confirmaron
+    - lista cuidadoresConfirmados: julian, juan
+    - Tan pronto un cuidador acepta se permite comenzar el viaje
+    '/
     'POSIBILIDAD DE USAR TEMPLATE METHOD'
-    '-----------------------------------'
-    'APAGAMOS NOTIFICACIONES Y NOTIFICAMOS A LOS CUIDADORES Y inicia el contador en viaje'
+    'APAGAMOS NOTIFICACIONES | NOTIFICAMOS A LOS CUIDADORES QUE ARRANCO EL VIAJE | INICIAMOS EL CRONOMETRO DEL VIAJE
     + void comenzar()
-    'Prende las notificaciones y notifica a los cuidadore que se llego bien'
+    'PRENDEMOS NOTIFICACIONES | NOTIFICAR A LOS CUIDADORES QUE SE LLEGO BIEN
     + void llegueBien()
-
     'Le notifica a los cuidadores que arranco el viaje'
     + notificarArranqueViaje()
     + void confirmarCuidadores()
@@ -49,30 +70,43 @@ class Viaje{
     - double distancia
     - double cronometro = 0
     - TipoAlerta tipoDeAlerta
-    - calcularDistanciaYDemora(CalculadorDistancia, CalculadorDemora)
-    - alertarPeligro
+
+    + calcularDistanciaYDemora(CalculadorDistancia, CalculadorDemora)
+    + alertarPeligro()
+    + iniciarCronometro()
 }
 
+Viaje *-UP- Transeunte
+Viaje *-LEFT- Ubicacion
+Viaje *-RIGHT- TipoAlerta
+Viaje --> CalculadorDistancia
+Viaje --> CalculadorDemora
+
 interface TipoAlerta {
-    void alertar()
+    +void alertar()
 }
+
+TipoAlerta <|.. MensajeAlerta
+TipoAlerta <|.. LlamadaPolicia
+TipoAlerta <|.. LlamadaUsuario
+TipoAlerta <|.. FalsaAlarma
 
 class MensajeAlerta {
     'Enviar un mensaje de alerta a sus cuidadores
-    alertar()
+    +alertar()
 }
 class LlamadaPolicia {
     'Realizar una llamada automática a la policía
-    alertar()
+    +alertar()
 }
-class LlamadaUsario {
+class LlamadaUsuario {
     'Realizar una llamada al celular del usuario
-    alertar()
+    +alertar()
 }
-class MensajeAlerta {
-    Integer minutosEspera
+class FalsaAlarma {
+    -Integer minutosEspera
     'Esperar N minutos para ver si es una falsa alarma (los minutos deben ser parametrizables)
-    alertar()
+    +alertar()
 }
 
 class Ubicacion{
@@ -81,6 +115,7 @@ class Ubicacion{
     - Float longitud
 }
 
+
 'REVISAR SI NO ES UN PATRON DE DISEÑO'
 interface CalculadorDistancia{
     + distanciaEntre(Ubicacion, Ubicacion);
@@ -88,5 +123,8 @@ interface CalculadorDistancia{
 interface CalculadorDemora{
     + demoraAproxTrayecto(double);
 }
+
+
+
 
 @enduml
