@@ -36,8 +36,7 @@ public class Viaje implements TareaTerminada{
 
         this.cronometro = new Temporizador(
             LocalTime.now(),
-            (long) this.getDemoraAprox(),
-            this
+            (long) this.getDemoraAprox()
         );
         cronometro.setListener(this);
     }

@@ -7,14 +7,14 @@ import java.util.*;
 public class Temporizador {
 	private Timer timer;
 	private LocalTime tiempoInicial;
-	private long tiempoEstimado;  // en milisegundos
+	private long tiempoTemporizador;  // en milisegundos
 	//private Viaje viaje;
 
 	private TareaTerminada listener;
 
-	public Temporizador(LocalTime tiempoInicial, long tiempoEstimado, Viaje viaje) {
+	public Temporizador(LocalTime tiempoInicial, long tiempoTemporizador) {
 		this.tiempoInicial = tiempoInicial;
-		this.tiempoEstimado = tiempoEstimado;
+		this.tiempoTemporizador = tiempoTemporizador;
 		this.timer = new Timer();
 		//this.viaje = viaje;
 	}
@@ -30,7 +30,7 @@ public class Temporizador {
 				@Override
 				public void run() {
 					Duration tiempoTranscurrido = Duration.between(LocalTime.now(), tiempoInicial);
-					if (tiempoTranscurrido.toMinutes() >= tiempoEstimado) {
+					if (tiempoTranscurrido.toMinutes() >= tiempoTemporizador) {
 						listener.finTemporizador();
 						timer.cancel();
 					}
