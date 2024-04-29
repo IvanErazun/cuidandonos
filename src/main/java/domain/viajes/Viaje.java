@@ -3,11 +3,12 @@ package domain.viajes;
 import domain.personas.Cuidador;
 import domain.utils.CalculadorDemora;
 import domain.utils.CalculadorDistancia;
+import domain.utils.TareaTerminada;
 import domain.utils.Temporizador;
 import java.time.LocalTime;
 import jdk.vm.ci.meta.Local;
 
-public class Viaje {
+public class Viaje implements TareaTerminada{
 
     private Ubicacion ubicacionInicial;
     private Ubicacion ubicacionFinal;
@@ -32,10 +33,17 @@ public class Viaje {
     }
 
     public void iniciarCronometro() {
+
         this.cronometro = new Temporizador(
             LocalTime.now(),
             (long) this.getDemoraAprox(),
             this
         );
+        cronometro.setListener(this);
+    }
+
+    @Override
+    public void finTemporizador() {
+        tipoDeAlerta.alertar();
     }
 }

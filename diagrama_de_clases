@@ -120,10 +120,10 @@ class Ubicacion{
 interface CalculadorDistancia{
     + distanciaEntre(Ubicacion, Ubicacion);
 }
+
 interface CalculadorDemora{
     + demoraAproxTrayecto(double);
 }
-
 
 
 
