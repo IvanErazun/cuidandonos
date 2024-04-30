@@ -1,6 +1,7 @@
 package domain.viajes;
 
 import domain.personas.Transeunte;
+import domain.utils.AccionTemporizada;
 import domain.utils.Temporizador;
 
 import java.time.LocalTime;
@@ -17,7 +18,9 @@ public class MensajeAlerta implements TipoAlerta {
             LocalTime.now(),
             5
         );
-        cronometro.setListener(this);
+
+        AccionTemporizada accionTemporizada = new AccionTemporizada();
+        cronometro.setListener(accionTemporizada);
     }
 
 }

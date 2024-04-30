@@ -5,8 +5,13 @@ import domain.viajes.Viaje;
 public class Cuidador{
     private Persona cuidador;
 
-    Boolean aceptoViaje(Viaje unViaje) {
-        return lePareceBuenViaje(unViaje);
+    public Boolean aceptasViaje(Viaje unViaje) {
+        if(lePareceBuenViaje(unViaje)) {
+            unViaje.aceptoViaje(this);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private Boolean lePareceBuenViaje(Viaje unViaje) {
@@ -15,8 +20,10 @@ public class Cuidador{
     }
 
     public void notificarArranque() {
+        //TODO logica para recibir el mensaje
     }
 
     public void notificarLlegadaBien() {
+        //TODO logica para recibir el mensaje
     }
 }

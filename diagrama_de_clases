@@ -20,8 +20,8 @@ class Persona{
 
 }
 
-Persona <|-- Cuidador
-Persona <|-- Transeunte
+Persona --o Cuidador
+Persona --o Transeunte
 
 class Cuidador{
     - Persona cuidador
@@ -34,8 +34,10 @@ class Transeunte{
     - Set<Cuidador> cuidadoresPendientes
     - Set<Cuidador> cuidadoresConfirmados
     - Viaje viaje
+
+    + armarViaje(Ubicacion actual, Ubicacion destino)
     'LOS QUE ACEPTAN EL CUIDADO SE AGREGAN A LA LISTA DE CUIDADORES'
-    + elegirCuidadores()
+    + elegirCuidador(Cuidador cuidador)
     /'
 
      ----DESCRIPCION DE ELEGIR CUIDADORES----
@@ -50,37 +52,40 @@ class Transeunte{
     - lista cuidadoresConfirmados: julian, juan
     - Tan pronto un cuidador acepta se permite comenzar el viaje
     '/
+    + removerCuidador(Cuidador cuidador)
+    +consultaAceptanViaje()
     'POSIBILIDAD DE USAR TEMPLATE METHOD'
     'APAGAMOS NOTIFICACIONES | NOTIFICAMOS A LOS CUIDADORES QUE ARRANCO EL VIAJE | INICIAMOS EL CRONOMETRO DEL VIAJE
-    + void comenzar()
+    + void comenzarViaje()
     'PRENDEMOS NOTIFICACIONES | NOTIFICAR A LOS CUIDADORES QUE SE LLEGO BIEN
     + void llegueBien()
     'Le notifica a los cuidadores que arranco el viaje'
-    + notificarArranqueViaje()
-    + void confirmarCuidadores()
+    - notificarArranqueViaje()
 }
 
 '--para un destino único--'
 class Viaje{
     - Ubicacion ubicacionInicial
     - Ubicacion ubicacionFinal
+    - TipoAlerta tipoDeAlerta
     'en minutos'
     - double demoraAprox
     'en metros'
     - double distancia
-    - double cronometro = 0
-    - TipoAlerta tipoDeAlerta
+    '- double cronometro = 0
+    - Temporizador cronometro;
+    - List<Cuidador> cuidadoresConfirmados;
 
     + calcularDistanciaYDemora(CalculadorDistancia, CalculadorDemora)
     + alertarPeligro()
     + iniciarCronometro()
 }
 
-Viaje *-UP- Transeunte
+Viaje -UP-* Transeunte
 Viaje *-LEFT- Ubicacion
 Viaje *-RIGHT- TipoAlerta
-Viaje --> CalculadorDistancia
-Viaje --> CalculadorDemora
+Viaje ..> CalculadorDistancia
+Viaje ..> CalculadorDemora
 
 interface TipoAlerta {
     +void alertar()

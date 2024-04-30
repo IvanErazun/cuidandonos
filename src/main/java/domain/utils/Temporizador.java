@@ -3,6 +3,7 @@ import domain.viajes.Viaje;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
+import lombok.Setter;
 
 public class Temporizador {
 	private Timer timer;
@@ -10,18 +11,15 @@ public class Temporizador {
 	private long tiempoTemporizador;  // en milisegundos
 	//private Viaje viaje;
 
-	private TareaTerminada listener;
+	//TODO cambiar nombre se SetListener y de listener
+	@Setter
+	private AccionTemporizada listener;
 
 	public Temporizador(LocalTime tiempoInicial, long tiempoTemporizador) {
 		this.tiempoInicial = tiempoInicial;
 		this.tiempoTemporizador = tiempoTemporizador;
 		this.timer = new Timer();
 		//this.viaje = viaje;
-	}
-
-	//TODO cambiar nombre se SetListener y de listener
-	public void setListener(TareaTerminada toSet) {
-		listener = toSet;
 	}
 
 	public void iniciar() {

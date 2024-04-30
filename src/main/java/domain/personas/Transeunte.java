@@ -4,23 +4,23 @@ import domain.utils.CalculadorDistancia;
 import domain.utils.Repositorio;
 import domain.viajes.Ubicacion;
 import domain.viajes.Viaje;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Transeunte {
     private Persona persona;
-    private Viaje viaje;
     private List<Cuidador> cuidadoresPendientes;
-    private List<Cuidador> cuidadoresConfirmados;
+    private Viaje viaje;
 
-    public Transeunte(List<Cuidador> cuidadoresPendientes) {
-        this.cuidadoresPendientes = cuidadoresPendientes;
+    public Transeunte() {
+        this.cuidadoresPendientes = new ArrayList<>();
     }
 
+    //CREO MOMENTANEAMENTE EL REPOSITORIO ACÁ
     Repositorio<Cuidador> repositorioDeCuidadores = new Repositorio<>();
-    void armarViaje() {
+
+    public void armarViaje(Ubicacion ubicacionActual, Ubicacion destino) {
         //TODO obtengo la info del viaje desde consola
-        Ubicacion ubicacionActual = new Ubicacion();
-        Ubicacion destino = new Ubicacion();
         this.viaje = new Viaje(ubicacionActual, destino);
         mostrarCuidadores(repositorioDeCuidadores.obtenerTodos());
     }
@@ -29,18 +29,18 @@ public class Transeunte {
         //capa interfaz
     }
 
-    public void elegirCuidadores(Cuidador cuidador) {
+    public void elegirCuidador(Cuidador cuidador) {
         //TODO agregar cuidador a cuidadoresPendiente para luego notificarlos
         cuidadoresPendientes.add(cuidador);
     }
-    public void removerCuidadores(Cuidador cuidador) {
+    public void removerCuidador(Cuidador cuidador) {
         //TODO eliminar cuidador de cuidadoresPendientes porque no se lo necesita
         cuidadoresPendientes.remove(cuidador);
     }
 
-    public void confirmarCuidadores(){
-        //notifica al cuidador
-        cuidadoresPendientes.forEach(cuidador -> cuidador.aceptoViaje(this.viaje));
+    public void consultaAceptanViaje(){
+        //Pregunta a todos los cuidadores si aceptan el viaje
+        cuidadoresPendientes.forEach(cuidador -> cuidador.aceptasViaje(this.viaje));
     }
 
     CalculadorDistancia calculadorDistancia;
@@ -59,11 +59,11 @@ public class Transeunte {
         //Encender notificaciones
         persona.prenderNotificaciones();
         //Notificar cuidadores
-        cuidadoresConfirmados.forEach(cuidador -> cuidador.notificarLlegadaBien());  // NOTIFICACION INFO
+        this.viaje.getCuidadoresConfirmados().forEach(cuidador -> cuidador.notificarLlegadaBien());  // NOTIFICACION INFO
 
     }
-    public void notificarArranqueViaje(){
-        cuidadoresConfirmados.forEach(cuidador -> cuidador.notificarArranque());  // NOTIFICACION INFO
+    private void notificarArranqueViaje(){
+        this.viaje.getCuidadoresConfirmados().forEach(cuidador -> cuidador.notificarArranque());  // NOTIFICACION INFO
     }
 
 }

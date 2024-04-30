@@ -14,10 +14,10 @@ public class Persona {
   private Boolean notificaciones;
 
   void prenderNotificaciones() {
-
+    this.notificaciones = Boolean.TRUE;
   }
   void apagarNotificaciones() {
-
+    this.notificaciones = Boolean.FALSE;
   }
 
 }
