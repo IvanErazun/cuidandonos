@@ -115,9 +115,11 @@ class FalsaAlarma {
 }
 
 class Ubicacion{
-    - String descripcion
-    - Float latitud
-    - Float longitud
+    - String provincia
+    - String ciudad
+    - Interger CP
+    - String calle
+    - Interger altura
 }
 
 
