@@ -29,7 +29,7 @@ TipoAlerta <|..DOWN. MensajeAlerta
 TipoAlerta <|..DOWN. LlamadaPolicia
 TipoAlerta <|..DOWN. LlamadaUsuario
 TipoAlerta <|..DOWN. FalsaAlarma
-TipoAlerta ..DOWN.> Viaje :<<use>>
+TipoAlerta .DOWN.> Viaje
 
 interface TipoAlerta {
     + void alertar(Viaje)
@@ -56,25 +56,44 @@ class FalsaAlarma {
 '--para un destino único--'
 class Viaje{
     - Ubicacion ubicacionInicial
-    - Ubicacion ubicacionFinal
+    - List<Ubicacion> destinos
+    - Double minPorParada
     - List<Personas> cuidadoresConfirmados;
     - List<Personas> cuidadoresPendientes;
     - Persona transeunte
     'en minutos'
     - double demoraAprox
     - LocalDateTime horaInicio
+    - TipoCalculadorDemora tipoCalculadorDemora
     + void notificar(String)
     + void agregarCuidador(Persona)
     + void agregarCuidadorConfirmado(Persona)
 }
 
+interface TipoCalculadorDemora{
+    + double calcularDemora(List<Ubicacion>)
+}
+
+
 Viaje --> Ubicacion
 Viaje --> Ubicacion
 Viaje --> Persona
 Viaje "1" --> "*" Persona
-Viaje .LEFT.> CalculadorDemora
-CalculadorDemora -UP-> AdapterCalculadorDistancia
-CalculadorDemora -UP-> AdapterCalculadorDemora
+Viaje -LEFT-> TipoCalculadorDemora
+CalculadorDemoraConEspera .UP.|> TipoCalculadorDemora
+CalculadorDemoraSinEspera .UP.|> TipoCalculadorDemora
+CalculadorDemoraConEspera ..> CalculadorDemora
+CalculadorDemoraSinEspera ..> CalculadorDemora
+CalculadorDemora --> AdapterCalculadorDistancia
+CalculadorDemora --> AdapterCalculadorDemora
+
+class CalculadorDemoraSinEspera{
+    + double calcularDemora(List<Ubicacion>)
+}
+
+class CalculadorDemoraConEspera{
+    + double calcularDemora(List<Ubicacion>)
+}
 
 
 class CalculadorDemora{
