@@ -73,8 +73,8 @@ Viaje --> Ubicacion
 Viaje --> Persona
 Viaje "1" --> "*" Persona
 Viaje .LEFT.> CalculadorDemora
-CalculadorDemora -DOWN-> AdapterCalculadorDistancia
-CalculadorDemora -DOWN-> AdapterCalculadorDemora
+CalculadorDemora -UP-> AdapterCalculadorDistancia
+CalculadorDemora -UP-> AdapterCalculadorDemora
 
 
 class CalculadorDemora{
