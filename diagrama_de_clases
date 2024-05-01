@@ -1,117 +1,18 @@
 @startuml
 'skinparam classAttributeIconSize 0
 
-'---herencia---'
-
-
 class Persona{
     - String nombre
     - String apellido
-    - String dirección
+    - Direccion direccion
     - String edad
     - String sexo
-    'pasivo / activo (fuiste un transeunte)' 'EVALUAR BOOLEANOS SOBRE ENUM | CLASE CONCRETA'
-    - Boolean estado
+    - TipoAlerta tipoDeAlerta
     'disponibilidad para recibir notificaciones'
     - Boolean notificaciones
+    + void notificar(String)
+    + Integer edad()
 
-    + void prenderNotificaciones()
-    + void apagarNotificaciones()
-
-}
-
-Persona --o Cuidador
-Persona --o Transeunte
-
-class Cuidador{
-    - Persona cuidador
-
-    +Boolean aceptoViaje(Viaje)
-}
-
-class Transeunte{
-    - Persona transeunte
-    - Set<Cuidador> cuidadoresPendientes
-    - Set<Cuidador> cuidadoresConfirmados
-    - Viaje viaje
-
-    + armarViaje(Ubicacion actual, Ubicacion destino)
-    'LOS QUE ACEPTAN EL CUIDADO SE AGREGAN A LA LISTA DE CUIDADORES'
-    + elegirCuidador(Cuidador cuidador)
-    /'
-
-     ----DESCRIPCION DE ELEGIR CUIDADORES----
-    1paso
-    - lista cuidadoresPendientes: julian, juan, juana, maria
-    2paso:
-    - aceptas o no? envio de notificacion de confirmación
-    - boton de comenzar bloqueado
-    - espera a que confirme al menos 1 cuidador
-    3paso:
-    - meter a lista de cuidadoresConfirmados aquellos que confirmaron
-    - lista cuidadoresConfirmados: julian, juan
-    - Tan pronto un cuidador acepta se permite comenzar el viaje
-    '/
-    + removerCuidador(Cuidador cuidador)
-    +consultaAceptanViaje()
-    'POSIBILIDAD DE USAR TEMPLATE METHOD'
-    'APAGAMOS NOTIFICACIONES | NOTIFICAMOS A LOS CUIDADORES QUE ARRANCO EL VIAJE | INICIAMOS EL CRONOMETRO DEL VIAJE
-    + void comenzarViaje()
-    'PRENDEMOS NOTIFICACIONES | NOTIFICAR A LOS CUIDADORES QUE SE LLEGO BIEN
-    + void llegueBien()
-    'Le notifica a los cuidadores que arranco el viaje'
-    - notificarArranqueViaje()
-}
-
-'--para un destino único--'
-class Viaje{
-    - Ubicacion ubicacionInicial
-    - Ubicacion ubicacionFinal
-    - TipoAlerta tipoDeAlerta
-    'en minutos'
-    - double demoraAprox
-    'en metros'
-    - double distancia
-    '- double cronometro = 0
-    - Temporizador cronometro;
-    - List<Cuidador> cuidadoresConfirmados;
-
-    + calcularDistanciaYDemora(CalculadorDistancia, CalculadorDemora)
-    + alertarPeligro()
-    + iniciarCronometro()
-}
-
-Viaje -UP-* Transeunte
-Viaje *-LEFT- Ubicacion
-Viaje *-RIGHT- TipoAlerta
-Viaje ..> CalculadorDistancia
-Viaje ..> CalculadorDemora
-
-interface TipoAlerta {
-    +void alertar()
-}
-
-TipoAlerta <|.. MensajeAlerta
-TipoAlerta <|.. LlamadaPolicia
-TipoAlerta <|.. LlamadaUsuario
-TipoAlerta <|.. FalsaAlarma
-
-class MensajeAlerta {
-    'Enviar un mensaje de alerta a sus cuidadores
-    +alertar()
-}
-class LlamadaPolicia {
-    'Realizar una llamada automática a la policía
-    +alertar()
-}
-class LlamadaUsuario {
-    'Realizar una llamada al celular del usuario
-    +alertar()
-}
-class FalsaAlarma {
-    -Integer minutosEspera
-    'Esperar N minutos para ver si es una falsa alarma (los minutos deben ser parametrizables)
-    +alertar()
 }
 
 class Ubicacion{
@@ -122,16 +23,72 @@ class Ubicacion{
     - Interger altura
 }
 
+Persona -LEFT-> Ubicacion
+Persona *-RIGHT- TipoAlerta
+TipoAlerta <|..DOWN. MensajeAlerta
+TipoAlerta <|..DOWN. LlamadaPolicia
+TipoAlerta <|..DOWN. LlamadaUsuario
+TipoAlerta <|..DOWN. FalsaAlarma
+TipoAlerta ..DOWN.> Viaje :<<use>>
 
-'REVISAR SI NO ES UN PATRON DE DISEÑO'
-interface CalculadorDistancia{
-    + distanciaEntre(Ubicacion, Ubicacion);
+interface TipoAlerta {
+    + void alertar(Viaje)
 }
 
-interface CalculadorDemora{
-    + demoraAproxTrayecto(double);
+class MensajeAlerta {
+    'Enviar un mensaje de alerta a sus cuidadores
+    + void alertar(Viaje)
+}
+class LlamadaPolicia {
+    'Realizar una llamada automática a la policía
+    + void alertar(Viaje)
+}
+class LlamadaUsuario {
+    'Realizar una llamada al celular del usuario
+    + void alertar(Viaje)
+}
+class FalsaAlarma {
+    - Integer minutosEspera
+    'Esperar N minutos para ver si es una falsa alarma (los minutos deben ser parametrizables)
+    + void alertar(Viaje)
 }
 
+'--para un destino único--'
+class Viaje{
+    - Ubicacion ubicacionInicial
+    - Ubicacion ubicacionFinal
+    - List<Personas> cuidadoresConfirmados;
+    - List<Personas> cuidadoresPendientes;
+    - Persona transeunte
+    'en minutos'
+    - double demoraAprox
+    - LocalDateTime horaInicio
+    + void notificar(String)
+    + void agregarCuidador(Persona)
+    + void agregarCuidadorConfirmado(Persona)
+}
 
+Viaje --> Ubicacion
+Viaje --> Ubicacion
+Viaje --> Persona
+Viaje "1" --> "*" Persona
+Viaje .LEFT.> CalculadorDemora
+CalculadorDemora -DOWN-> AdapterCalculadorDistancia
+CalculadorDemora -DOWN-> AdapterCalculadorDemora
+
+
+class CalculadorDemora{
+    - AdapterCalculadorDistancia calculadorDistancia
+    - AdapterCalculadorDemora calculadorDemora
+    + double demoraEntre(Ubicacion, Ubicacion)
+}
+
+interface AdapterCalculadorDistancia{
+   + double distanciaEntre(Ubicacion, Ubicacion)
+}
+
+interface AdapterCalculadorDemora{
+   + double demoraEntre(double)
+}
 
 @enduml
